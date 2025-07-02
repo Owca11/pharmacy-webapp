@@ -1,147 +1,136 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
+import { fetchAllDrugs, logout as authLogout } from "../authService";
 import "./Home.css";
 
-type Product = {
+interface Product {
   id: number;
-  name: string;
-  description: string;
+  brandName: string;
   price: number;
-  category: string;
-  image: string;
-};
+  graphicLink: string;
+  prescriptionStatus: string;
+  isAvailable: boolean;
+}
 
-type CartItem = Product;
+interface CartItem {
+  id: number;
+  brandName: string;
+  price: number;
+  quantity: number;
+}
 
 const Home: React.FC = () => {
   const [activeTab, setActiveTab] = useState<
-    "shop" | "prescriptions" | "orders" | "profile" | "cart"
+    "shop" | "orders" | "profile" | "cart"
   >("shop");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const products: Product[] = [
-    {
-      id: 1,
-      name: "Ibuprofen 200mg",
-      description: "Pain reliever and fever reducer",
-      price: 5.99,
-      category: "Pain Relief",
-      image: "💊",
-    },
-    {
-      id: 2,
-      name: "Cetirizine 10mg",
-      description: "Antihistamine for allergy relief",
-      price: 8.49,
-      category: "Allergy",
-      image: "🌼",
-    },
-    {
-      id: 3,
-      name: "Omeprazole 20mg",
-      description: "Acid reducer for heartburn",
-      price: 12.99,
-      category: "Digestive Health",
-      image: "🔥",
-    },
-    {
-      id: 4,
-      name: "Vitamin D3 1000IU",
-      description: "Supports bone and immune health",
-      price: 9.99,
-      category: "Vitamins",
-      image: "🌞",
-    },
-    {
-      id: 5,
-      name: "Band-Aids",
-      description: "Assorted sizes for wound care",
-      price: 3.49,
-      category: "First Aid",
-      image: "🩹",
-    },
-    {
-      id: 6,
-      name: "Pepto-Bismol",
-      description: "Upset stomach reliever",
-      price: 6.79,
-      category: "Digestive Health",
-      image: "🌸",
-    },
-  ];
+  useEffect(() => {
+    const loadDrugs = async () => {
+      try {
+        const drugs = await fetchAllDrugs();
+        const mappedProducts = drugs.map((drug) => ({
+          id: drug.id,
+          brandName: drug.brandName,
+          price: drug.price,
+          graphicLink: drug.graphicLink,
+          prescriptionStatus: drug.prescriptionStatus,
+          isAvailable: drug.isAvailable,
+        }));
+        setProducts(mappedProducts);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to load medications"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (activeTab === "shop") {
+      loadDrugs();
+    }
+  }, [activeTab]);
 
   const filteredProducts = products.filter(
     (product) =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchTerm.toLowerCase())
+      product.brandName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.prescriptionStatus
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
   );
 
   const addToCart = (product: Product): void => {
-    setCart([...cart, product]);
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.id === product.id);
+      if (existingItem) {
+        return prevCart.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      } else {
+        return [
+          ...prevCart,
+          {
+            id: product.id,
+            brandName: product.brandName,
+            price: product.price,
+            quantity: 1,
+          },
+        ];
+      }
+    });
   };
 
   const removeFromCart = (productId: number): void => {
     setCart(cart.filter((item) => item.id !== productId));
   };
 
+  const updateQuantity = (productId: number, newQuantity: number): void => {
+    if (newQuantity < 1) {
+      removeFromCart(productId);
+      return;
+    }
+    setCart(
+      cart.map((item) =>
+        item.id === productId ? { ...item, quantity: newQuantity } : item
+      )
+    );
+  };
+
   const getTotal = (): string => {
-    return cart.reduce((sum, item) => sum + item.price, 0).toFixed(2);
+    return cart
+      .reduce((sum, item) => sum + item.price * item.quantity, 0)
+      .toFixed(2);
   };
 
   const handleLogout = (): void => {
+    authLogout();
     navigate("/");
   };
 
+  const navigateToProductDetail = (productId: number): void => {
+    navigate(`/product/${productId}`);
+  };
+
+  if (loading && activeTab === "shop") {
+    return <div className="loading">Loading products...</div>;
+  }
+
+  if (error) {
+    return <div className="error">Error: {error}</div>;
+  }
+
   return (
     <div className="home-container">
-      {/* Sidebar */}
-      <div className="sidebar">
-        <div className="logo-container">
-          <div className="logo">💊</div>
-          <h1>MediCart</h1>
-        </div>
-
-        <nav className="nav-menu">
-          <button
-            className={`nav-item ${activeTab === "shop" ? "active" : ""}`}
-            onClick={() => setActiveTab("shop")}
-          >
-            Shop Medications
-          </button>
-          <button
-            className={`nav-item ${activeTab === "prescriptions" ? "active" : ""}`}
-            onClick={() => setActiveTab("prescriptions")}
-          >
-            My Prescriptions
-          </button>
-          <button
-            className={`nav-item ${activeTab === "orders" ? "active" : ""}`}
-            onClick={() => setActiveTab("orders")}
-          >
-            Order History
-          </button>
-          <button
-            className={`nav-item ${activeTab === "profile" ? "active" : ""}`}
-            onClick={() => setActiveTab("profile")}
-          >
-            My Profile
-          </button>
-        </nav>
-
-        {/* Only show logout button on profile page */}
-        {activeTab === "profile" && (
-          <div className="logout-container">
-            <Button variant="outline" className="w-full" onClick={handleLogout}>
-              Log out
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* Main Content */}
+      {/* Removed the sidebar with MediCart logo and text */}
       <div className="main-content">
         <header className="header">
           <h2 className="page-title">
@@ -149,92 +138,98 @@ const Home: React.FC = () => {
               ? "Online Pharmacy"
               : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
           </h2>
+
+          <nav className="top-nav-menu">
+            <button
+              className={`nav-item ${activeTab === "shop" ? "active" : ""}`}
+              onClick={() => setActiveTab("shop")}
+            >
+              Shop Medications
+            </button>
+            <button
+              className={`nav-item ${activeTab === "orders" ? "active" : ""}`}
+              onClick={() => setActiveTab("orders")}
+            >
+              Order History
+            </button>
+            <button
+              className={`nav-item ${activeTab === "profile" ? "active" : ""}`}
+              onClick={() => setActiveTab("profile")}
+            >
+              My Profile
+            </button>
+          </nav>
+
           <div className="user-info">
-            <div className="relative">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setActiveTab("cart")}
-                className="cart-button"
-              >
-                <span className="cart-icon">🛒</span>
-                <span className="cart-count">{cart.length}</span>
-              </Button>
-            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setActiveTab("cart")}
+              className="cart-button"
+            >
+              <span className="cart-icon">🛒</span>
+              <span className="cart-count">
+                {cart.reduce((sum, item) => sum + item.quantity, 0)}
+              </span>
+            </Button>
             <span className="username">Welcome, User!</span>
             <div className="avatar">👩‍⚕️</div>
+            <Button
+              variant="outline"
+              onClick={handleLogout}
+              className="logout-button"
+            >
+              Log out
+            </Button>
           </div>
         </header>
 
         <div className="content-area">
           {activeTab === "shop" && (
             <div className="pharmacy-shop">
-              <div className="search-container mb-6">
+              <div className="search-container">
                 <input
                   type="text"
-                  placeholder="Search medications or categories..."
+                  placeholder="Search medications..."
                   className="search-input"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
 
-              <div className="categories mb-6">
-                <h3 className="text-lg font-semibold mb-3">Categories</h3>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    "All",
-                    "Pain Relief",
-                    "Allergy",
-                    "Digestive Health",
-                    "Vitamins",
-                    "First Aid",
-                  ].map((category) => (
-                    <button
-                      key={category}
-                      className={`category-pill ${
-                        searchTerm === category ? "active" : ""
-                      }`}
-                      onClick={() =>
-                        setSearchTerm(category === "All" ? "" : category)
-                      }
-                    >
-                      {category}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <div className="products-grid">
                 {filteredProducts.length > 0 ? (
                   filteredProducts.map((product) => (
                     <div key={product.id} className="product-card">
-                      <div className="product-image">{product.image}</div>
+                      <div
+                        className="product-image"
+                        onClick={() => navigateToProductDetail(product.id)}
+                      >
+                        {product.graphicLink ? (
+                          <img
+                            src={product.graphicLink}
+                            alt={product.brandName}
+                          />
+                        ) : (
+                          <span>💊</span>
+                        )}
+                      </div>
                       <div className="product-details">
-                        <h3 className="product-name">{product.name}</h3>
-                        <p className="product-category">{product.category}</p>
-                        <p className="product-description">
-                          {product.description}
-                        </p>
-                        <div className="product-footer">
-                          <span className="product-price">
-                            ${product.price.toFixed(2)}
-                          </span>
-                          <Button
-                            size="sm"
-                            onClick={() => addToCart(product)}
-                            className="add-to-cart-btn"
-                          >
-                            Add to Cart
-                          </Button>
-                        </div>
+                        <h3
+                          onClick={() => navigateToProductDetail(product.id)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {product.brandName}
+                        </h3>
+                        <p>${product.price.toFixed(2)}</p>
+                        <Button size="sm" onClick={() => addToCart(product)}>
+                          Add to Cart
+                        </Button>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p className="text-center py-8">
-                    No products found matching your search.
-                  </p>
+                  <p>No products found</p>
                 )}
               </div>
             </div>
@@ -242,16 +237,32 @@ const Home: React.FC = () => {
 
           {activeTab === "cart" && (
             <div className="shopping-cart">
-              <h3 className="text-xl font-semibold mb-4">Your Shopping Cart</h3>
+              <h3>Your Cart</h3>
               {cart.length > 0 ? (
                 <>
                   <div className="cart-items">
                     {cart.map((item) => (
                       <div key={item.id} className="cart-item">
-                        <div className="cart-item-image">{item.image}</div>
                         <div className="cart-item-details">
-                          <h4>{item.name}</h4>
+                          <h4>{item.brandName}</h4>
                           <p>${item.price.toFixed(2)}</p>
+                          <div className="quantity-controls">
+                            <button
+                              onClick={() =>
+                                updateQuantity(item.id, item.quantity - 1)
+                              }
+                            >
+                              -
+                            </button>
+                            <span>{item.quantity}</span>
+                            <button
+                              onClick={() =>
+                                updateQuantity(item.id, item.quantity + 1)
+                              }
+                            >
+                              +
+                            </button>
+                          </div>
                         </div>
                         <button
                           className="remove-item"
@@ -267,10 +278,7 @@ const Home: React.FC = () => {
                       <span>Total:</span>
                       <span>${getTotal()}</span>
                     </div>
-                    <Button
-                      className="checkout-btn"
-                      onClick={() => console.log("Proceeding to checkout...")}
-                    >
+                    <Button className="checkout-btn">
                       Proceed to Checkout
                     </Button>
                   </div>
@@ -278,11 +286,7 @@ const Home: React.FC = () => {
               ) : (
                 <div className="empty-cart">
                   <p>Your cart is empty</p>
-                  <Button
-                    variant="secondary"
-                    onClick={() => setActiveTab("shop")}
-                    className="continue-shopping-btn"
-                  >
+                  <Button onClick={() => setActiveTab("shop")}>
                     Continue Shopping
                   </Button>
                 </div>
@@ -290,17 +294,13 @@ const Home: React.FC = () => {
             </div>
           )}
 
-          {activeTab === "prescriptions" && (
-            <div className="prescriptions">
-              <h3>Your Prescriptions</h3>
-              <p>Prescription management content goes here</p>
-            </div>
-          )}
-
           {activeTab === "orders" && (
             <div className="orders">
               <h3>Order History</h3>
-              <p>Order history content goes here</p>
+              <p>
+                This section is currently under development. Your past orders
+                will appear here once implemented.
+              </p>
             </div>
           )}
 
@@ -308,17 +308,11 @@ const Home: React.FC = () => {
             <div className="profile">
               <h3>Your Profile</h3>
               <div className="profile-content">
-                <div className="profile-section">
-                  <h4>Personal Information</h4>
-                  <p>Name: Jane Doe</p>
-                  <p>Email: jane.doe@example.com</p>
-                  <p>Phone: (123) 456-7890</p>
-                </div>
-                <div className="profile-section">
-                  <h4>Shipping Address</h4>
-                  <p>123 Main St, Apt 4B</p>
-                  <p>New York, NY 10001</p>
-                </div>
+                <p>
+                  This section is currently under development. Your personal
+                  information and shipping address details will be manageable
+                  here once implemented.
+                </p>
               </div>
             </div>
           )}

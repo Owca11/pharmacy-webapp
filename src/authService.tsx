@@ -1,4 +1,6 @@
-export {};
+// src/services/authService.ts
+import { DrugDto } from "../src/Types";
+
 const API_BASE_URL = "http://localhost:8080/api";
 
 interface LoginRequest {
@@ -39,5 +41,36 @@ export const isAuthenticated = (): boolean => {
 
 export const logout = (): void => {
   localStorage.removeItem("authToken");
-  // Redirect to login page if needed
+};
+
+export const fetchAllDrugs = async (): Promise<DrugDto[]> => {
+  const token = getAuthToken();
+  const response = await fetch(`${API_BASE_URL}/drugs`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to fetch drugs");
+  }
+
+  return response.json();
+};
+
+export const fetchDrugById = async (id: number): Promise<DrugDto> => {
+  const response = await fetch(`${API_BASE_URL}/drugs/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || `Failed to fetch drug with ID ${id}`);
+  }
+
+  return response.json();
 };
