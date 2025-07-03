@@ -13,6 +13,9 @@ interface LoginResponse {
   token: string;
 }
 
+/**
+ * Login component for user authentication.
+ */
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -20,6 +23,9 @@ function Login() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  /**
+   * Handles the form submission for user login.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -44,10 +50,8 @@ function Login() {
 
       const data: LoginResponse = await response.json();
 
-      // Store the token
       localStorage.setItem("authToken", data.token);
 
-      // Redirect to home page
       navigate("/home");
     } catch (err) {
       if (err instanceof Error) {
@@ -78,7 +82,7 @@ function Login() {
 
         <form onSubmit={handleSubmit}>
           <Input
-            type="text" // Changed from email to text for username
+            type="text"
             id="username"
             value={username}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -106,9 +110,6 @@ function Login() {
           </Button>
 
           <div className="auth-links">
-            {/* <a href="#" className="forgot-password">
-              Forgot password?
-            </a> */}
             <Link to="/register" className="register-link">
               New here? Sign up
             </Link>

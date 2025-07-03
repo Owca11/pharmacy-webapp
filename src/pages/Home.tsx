@@ -31,6 +31,9 @@ const Home: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  /**
+   * Loads all drugs when the active tab is "shop".
+   */
   useEffect(() => {
     const loadDrugs = async () => {
       try {
@@ -58,6 +61,9 @@ const Home: React.FC = () => {
     }
   }, [activeTab]);
 
+  /**
+   * Filters products based on search term.
+   */
   const filteredProducts = products.filter(
     (product) =>
       product.brandName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -66,6 +72,9 @@ const Home: React.FC = () => {
         .includes(searchTerm.toLowerCase())
   );
 
+  /**
+   * Adds a product to the cart or increments its quantity.
+   */
   const addToCart = (product: Product): void => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === product.id);
@@ -89,10 +98,16 @@ const Home: React.FC = () => {
     });
   };
 
+  /**
+   * Removes a product from the cart.
+   */
   const removeFromCart = (productId: number): void => {
     setCart(cart.filter((item) => item.id !== productId));
   };
 
+  /**
+   * Updates the quantity of a product in the cart.
+   */
   const updateQuantity = (productId: number, newQuantity: number): void => {
     if (newQuantity < 1) {
       removeFromCart(productId);
@@ -105,17 +120,26 @@ const Home: React.FC = () => {
     );
   };
 
+  /**
+   * Calculates the total price of items in the cart.
+   */
   const getTotal = (): string => {
     return cart
       .reduce((sum, item) => sum + item.price * item.quantity, 0)
       .toFixed(2);
   };
 
+  /**
+   * Handles user logout.
+   */
   const handleLogout = (): void => {
     authLogout();
     navigate("/");
   };
 
+  /**
+   * Navigates to the product detail page.
+   */
   const navigateToProductDetail = (productId: number): void => {
     navigate(`/product/${productId}`);
   };
@@ -130,7 +154,6 @@ const Home: React.FC = () => {
 
   return (
     <div className="home-container">
-      {/* Removed the sidebar with MediCart logo and text */}
       <div className="main-content">
         <header className="header">
           <h2 className="page-title">

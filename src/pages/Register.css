@@ -1,25 +1,30 @@
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap");
 
+/* Base styles for all elements. */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Quicksand', sans-serif;
+  font-family: "Quicksand", sans-serif;
 }
 
-body, html {
+/* Body and HTML height and background. */
+body,
+html {
   height: 100%;
   background: linear-gradient(to bottom right, #ffe6f0, #fff0f5);
 }
 
+/* Background styling for the page. */
 .background {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background-image: url('https://www.transparenttextures.com/patterns/pink-floral.png');
+  background-image: url("https://www.transparenttextures.com/patterns/pink-floral.png");
   background-size: cover;
 }
 
+/* Container for the register form. */
 .register-container {
   background: #fffafd;
   padding: 3rem 2.5rem;
@@ -31,10 +36,12 @@ body, html {
   transition: transform 0.3s ease;
 }
 
+/* Hover effect for the register container. */
 .register-container:hover {
   transform: scale(1.01);
 }
 
+/* Styling for the flower icon. */
 .flower-icon {
   width: 60px;
   height: 60px;
@@ -48,6 +55,7 @@ body, html {
   box-shadow: 0 0 10px rgba(255, 182, 193, 0.3);
 }
 
+/* Main heading style. */
 h1 {
   color: #ff69b4;
   margin-bottom: 0.5rem;
@@ -55,6 +63,7 @@ h1 {
   font-weight: bold;
 }
 
+/* Subtitle style. */
 .subtitle {
   color: #a67c94;
   margin-bottom: 2rem;
@@ -62,12 +71,13 @@ h1 {
   font-style: italic;
 }
 
-/* --- Form Elements --- */
+/* Input group container. */
 .input-group {
   margin-bottom: 1.3rem;
   text-align: left;
 }
 
+/* Label styling for form inputs. */
 label {
   display: block;
   margin-bottom: 0.4rem;
@@ -76,6 +86,7 @@ label {
   font-size: 0.9rem;
 }
 
+/* Input field styling. */
 input {
   width: 100%;
   padding: 12px 15px;
@@ -86,13 +97,14 @@ input {
   transition: 0.3s;
 }
 
+/* Input focus styling. */
 input:focus {
   outline: none;
   border-color: #ff69b4;
   box-shadow: 0 0 5px rgba(255, 105, 180, 0.2);
 }
 
-/* --- Button --- */
+/* Button styling. */
 .btn {
   width: 100%;
   padding: 14px;
@@ -108,11 +120,12 @@ input:focus {
   box-shadow: 0 4px 10px rgba(255, 105, 180, 0.2);
 }
 
+/* Button hover effect. */
 .btn:hover {
   background: #ff1493;
 }
 
-/* --- Footer --- */
+/* Footer styling. */
 .footer {
   margin-top: 2rem;
   color: #d8a7b1;
@@ -120,11 +133,13 @@ input:focus {
   font-style: italic;
 }
 
+/* Footer link styling. */
 .footer a {
   color: #ff66b2;
   text-decoration: none;
 }
 
+/* Footer link hover effect. */
 .footer a:hover {
   text-decoration: underline;
 }

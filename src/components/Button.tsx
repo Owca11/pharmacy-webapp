@@ -1,5 +1,8 @@
 import React from "react";
 
+/**
+ * Props for the Button component.
+ */
 interface ButtonProps {
   children: React.ReactNode;
   variant?: "primary" | "secondary" | "outline";
@@ -11,6 +14,11 @@ interface ButtonProps {
   disabled?: boolean;
 }
 
+/**
+ * Reusable Button component.
+ * @param {ButtonProps} props - The props for the button.
+ * @returns {React.FC<ButtonProps>} The Button component.
+ */
 const Button: React.FC<ButtonProps> = ({
   children,
   variant = "primary",
@@ -21,7 +29,6 @@ const Button: React.FC<ButtonProps> = ({
   fullWidth = false,
   disabled = false,
 }) => {
-  // Size styles
   const sizeStyles = {
     sm: {
       padding: "8px 16px",
@@ -37,7 +44,6 @@ const Button: React.FC<ButtonProps> = ({
     },
   };
 
-  // Base styles
   const baseStyles: React.CSSProperties = {
     borderRadius: "8px",
     fontWeight: 500,
@@ -48,7 +54,6 @@ const Button: React.FC<ButtonProps> = ({
     ...sizeStyles[size],
   };
 
-  // Variant styles
   const variantStyles = {
     primary: {
       backgroundColor: disabled ? "#ffb6c1" : "#ff69b4",
@@ -75,26 +80,18 @@ const Button: React.FC<ButtonProps> = ({
     },
   };
 
-  // Combine all styles
-  const buttonStyles = {
+  const combinedStyles = {
     ...baseStyles,
     ...variantStyles[variant],
   };
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!disabled && onClick) {
-      onClick(e);
-    }
-  };
-
   return (
     <button
-      type={type}
-      onClick={handleClick}
-      style={buttonStyles}
+      style={combinedStyles}
+      onClick={onClick}
       className={className}
+      type={type}
       disabled={disabled}
-      aria-disabled={disabled}
     >
       {children}
     </button>

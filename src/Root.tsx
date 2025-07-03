@@ -14,7 +14,6 @@ function Root() {
       <Route element={<ProtectedRoute />}>
         <Route path="/home" element={<Home />} />
         <Route path="/product/:id" element={<ProductDetail />} />
-        {/* Other protected routes */}
       </Route>
     </Routes>
   );

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 export {};
-// Define the interface for the data we expect to receive
+
 interface Post {
   userId: number;
   id: number;
@@ -8,30 +8,31 @@ interface Post {
   body: string;
 }
 
+/**
+ * DataFetcher component fetches and displays posts from a JSONPlaceholder API.
+ */
 function DataFetcher() {
-  // Use the Post[] type for the 'posts' state
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    /**
+     * Fetches posts from the API.
+     */
     const fetchPosts = async () => {
       try {
-        // Fetch data from JSONPlaceholder API
         const response = await fetch(
           "https://jsonplaceholder.typicode.com/posts"
         );
 
-        // Check if the response is ok (status 200-299)
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        // Parse the JSON response as an array of Post objects
         const data: Post[] = await response.json();
         setPosts(data);
       } catch (err) {
-        // Type narrowing for error handling
         if (err instanceof Error) {
           setError(err.message);
         } else {
@@ -42,13 +43,12 @@ function DataFetcher() {
       }
     };
 
-    fetchPosts(); // Call the fetch function when the component mounts
+    fetchPosts();
 
-    // Optional: Cleanup function (e.g., for aborting fetch requests)
     return () => {
-      // Use AbortController for cleanup if needed
+      // Cleanup if needed
     };
-  }, []); // Empty dependency array ensures this effect runs only once
+  }, []);
 
   if (loading) {
     return <div>Loading data...</div>;

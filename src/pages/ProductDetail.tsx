@@ -2,9 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import { fetchDrugById } from "../authService";
-import { DrugDto } from "../Types";
+import { DrugDto } from "../components/types";
 import "./Home.css";
 
+/**
+ * ProductDetail component displays the details of a single product.
+ */
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<DrugDto | null>(null);
@@ -13,6 +16,9 @@ const ProductDetail: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    /**
+     * Loads drug data by ID.
+     */
     const loadDrug = async () => {
       try {
         if (!id) return;
@@ -28,7 +34,6 @@ const ProductDetail: React.FC = () => {
         setLoading(false);
       }
     };
-
     loadDrug();
   }, [id]);
 

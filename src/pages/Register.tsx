@@ -2,16 +2,22 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Register.css";
 
+/**
+ * Register component handles user registration.
+ */
 function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [registrationMessage, setRegistrationMessage] = useState(""); // New state for the message
+  const [registrationMessage, setRegistrationMessage] = useState("");
 
+  /**
+   * Handles the form submission for registration.
+   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setRegistrationMessage(""); // Clear previous messages
+    setRegistrationMessage("");
 
     if (password !== confirmPassword) {
       alert("Passwords don't match 💔");
@@ -19,7 +25,6 @@ function Register() {
     }
 
     console.log("Registration info:", { name, email, password });
-    // Set the success message
     setRegistrationMessage(
       "We are thrilled you're trying to join BubblePharm! Unfortunately, registration is not implemented in this version. Thank you for your understanding! 💖"
     );

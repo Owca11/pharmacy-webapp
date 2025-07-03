@@ -1,5 +1,8 @@
 import React from "react";
 
+/**
+ * Props for the Input component.
+ */
 interface InputProps {
   type?: string;
   placeholder?: string;
@@ -11,6 +14,11 @@ interface InputProps {
   required?: boolean;
 }
 
+/**
+ * Reusable Input component for form fields.
+ * @param {InputProps} props - The props for the input.
+ * @returns {React.FC<InputProps>} The Input component.
+ */
 const Input: React.FC<InputProps> = ({
   type = "text",
   placeholder,
@@ -38,7 +46,7 @@ const Input: React.FC<InputProps> = ({
         value={value}
         onChange={onChange}
         required={required}
-        className={`w-full px-4 py-2 border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-transparent transition-all ${className}`}
+        className={`w-full px-4 py-2 border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-300 focus:border-transparent transition-all ${className}`}
       />
     </div>
   );

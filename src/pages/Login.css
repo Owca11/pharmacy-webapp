@@ -60,7 +60,7 @@ h1 {
   font-style: italic;
 }
 
-/* --- Form Elements --- */
+/* Form Elements */
 .input-group {
   margin-bottom: 1.5rem;
   text-align: left;
@@ -90,8 +90,7 @@ input:focus {
   box-shadow: 0 0 5px rgba(255, 105, 180, 0.2);
 }
 
-/* --- Buttons & Links --- */
-
+/* Buttons & Links */
 .auth-links {
   margin-top: 1.5rem;
 }
@@ -111,7 +110,7 @@ input:focus {
   color: #c71585;
 }
 
-/* --- Footer --- */
+/* Footer */
 .footer {
   margin-top: 2rem;
   color: #d8a7b1;
